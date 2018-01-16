@@ -8,27 +8,24 @@ using Eigen::VectorXd;
 using namespace std;
 
 class Tools {
-public:
+ public:
   /**
-  * Constructor.
-  */
-  Tools();
+   * A helper method to calculate RMSE.
+   */
+  static VectorXd CalculateRMSE(const vector<VectorXd> &estimations,
+                                const vector<VectorXd> &ground_truth);
 
   /**
-  * Destructor.
-  */
-  virtual ~Tools();
+   * A helper method to calculate Jacobians.
+   */
+  static MatrixXd CalculateJacobian(const VectorXd &x_state);
 
   /**
-  * A helper method to calculate RMSE.
-  */
-  VectorXd CalculateRMSE(const vector<VectorXd> &estimations, const vector<VectorXd> &ground_truth);
-
-  /**
-  * A helper method to calculate Jacobians.
-  */
-  MatrixXd CalculateJacobian(const VectorXd& x_state);
-
+   * Returns the specified angle in the range -PI < 0 < PI
+   * @param radians_in
+   * @return
+   */
+  static double NormalizeAngle(double radians_in);
 };
 
 #endif /* TOOLS_H_ */
