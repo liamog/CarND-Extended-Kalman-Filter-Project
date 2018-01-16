@@ -8,6 +8,8 @@ cmake-build-debug/
 # editor config
 .vscode/
 
+ekf.sublime-workspace
+
 # Xcode
 *.pbxuser
 !default.pbxuser
