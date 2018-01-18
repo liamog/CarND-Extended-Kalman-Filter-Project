@@ -34,9 +34,12 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
   return rmse;
 }
 
-MatrixXd Tools::CalculateJacobian(const VectorXd &x_state) {
-  MatrixXd Hj(3, 4);
-  Hj << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
+bool Tools::CalculateJacobian(const VectorXd &x_state, MatrixXd *Hj) {
+  assert(Hj != nullptr);
+  assert(Hj->rows() == 3);
+  assert(Hj->cols() == 4);
+
+  *Hj << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 
   // TODO CHECK DIVIDE BY ZERO
   // recover state parameters
@@ -47,6 +50,7 @@ MatrixXd Tools::CalculateJacobian(const VectorXd &x_state) {
   double sqrt_px2_py2 = sqrt(px_2 + py_2);
   if (sqrt_px2_py2 == 0) {
     // Potential divide by zero. We want to ignore this state update so?
+    return false;
   }
 
   double vx = x_state(2);
@@ -57,11 +61,11 @@ MatrixXd Tools::CalculateJacobian(const VectorXd &x_state) {
   double denom_1 = pow((px_2 + py_2), 1.5);
   double num_1 = py * ((vx * py) - (vy * px));
 
-  Hj << px_over_sqrt, py_over_sqrt, 0, 0, -1 * py / (px_2 + py_2),
+  *Hj << px_over_sqrt, py_over_sqrt, 0, 0, -1 * py / (px_2 + py_2),
       px / px_2 + py_2, 0, 0, num_1 / denom_1,
       (py * (vx * py - vy * px)) / denom_1, px_over_sqrt, py_over_sqrt;
 
-  return Hj;
+  return true;
 }
 
 double Tools::NormalizeAngle(double radians_in) {

@@ -100,6 +100,7 @@ int main() {
           gt_values(2) = vx_gt;
           gt_values(3) = vy_gt;
           ground_truth.push_back(gt_values);
+          std::cout << "gt x=" << x_gt << ",y=" << y_gt << std::endl;
 
           // Call ProcessMeasurment(meas_package) for Kalman filter
           fusionEKF.ProcessMeasurement(meas_package);
@@ -108,16 +109,17 @@ int main() {
           // state vector
 
           VectorXd estimate(4);
-
-          double p_x = fusionEKF.ekf_.x()(0);
-          double p_y = fusionEKF.ekf_.x()(1);
-          double v1 = fusionEKF.ekf_.x()(2);
-          double v2 = fusionEKF.ekf_.x()(3);
+          const Eigen::VectorXd &x =fusionEKF.ekf_.x();
+          double p_x = x(0);
+          double p_y = x(1);
+          double v1 = x(2);
+          double v2 = x(3);
 
           estimate(0) = p_x;
           estimate(1) = p_y;
           estimate(2) = v1;
           estimate(3) = v2;
+          std::cout << "pred x=" << p_x << ",y=" << p_y << std::endl;
 
           estimations.push_back(estimate);
 
@@ -131,7 +133,7 @@ int main() {
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
-          // std::cout << msg << std::endl;
+//          std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {

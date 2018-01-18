@@ -20,12 +20,13 @@ class KalmanFilter {
    * @param P_in Initial state covariance
    * @param F_in Transition matrix
    * @param H_in Measurement matrix
-   * @param R_in Measurement covariance matrix
+   * @param Rl_in Measurement covariance matrix for laser
+   * @param Rr_in Measurement covariance matrix for radar
    * @param Q_in Process covariance matrix
    */
   void Init(Eigen::VectorXd &x_in, Eigen::MatrixXd &P_in, Eigen::MatrixXd &F_in,
-            Eigen::MatrixXd &H_in, Eigen::MatrixXd &R_in,
-            Eigen::MatrixXd &Q_in);
+            Eigen::MatrixXd &H_in, Eigen::MatrixXd &Rl_in,
+            Eigen::MatrixXd &Rr_in, Eigen::MatrixXd &Q_in);
 
   void UpdateDt(double dt, double noise_ax, double noise_ay);
 
@@ -48,7 +49,7 @@ class KalmanFilter {
    */
   void UpdateEKF(const Eigen::VectorXd &z);
 
-  const Eigen::MatrixXd x() {return x_;}
+  const Eigen::VectorXd &x() const { return x_; }
 
  private:
   // state vector
@@ -69,8 +70,11 @@ class KalmanFilter {
   // measurement transpose matrix
   Eigen::MatrixXd Ht_;
 
-  // measurement covariance matrix
-  Eigen::MatrixXd R_;
+  // measurement covariance matrix lidar
+  Eigen::MatrixXd Rl_;
+
+  // measurement covariance matrix radar
+  Eigen::MatrixXd Rr_;
 
   // Identity matrix
   Eigen::MatrixXd I_;

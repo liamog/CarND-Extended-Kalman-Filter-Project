@@ -18,7 +18,7 @@ class Tools {
   /**
    * A helper method to calculate Jacobians.
    */
-  static MatrixXd CalculateJacobian(const VectorXd &x_state);
+  static bool CalculateJacobian(const VectorXd &x_state, MatrixXd *Hj);
 
   /**
    * Returns the specified angle in the range -PI < 0 < PI
