@@ -41,29 +41,27 @@ bool Tools::CalculateJacobian(const VectorXd &x_state, MatrixXd *Hj) {
 
   *Hj << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 
-  // TODO CHECK DIVIDE BY ZERO
-  // recover state parameters
-  double px = x_state(0);
-  double px_2 = px * px;
-  double py = x_state(1);
-  double py_2 = py * py;
-  double sqrt_px2_py2 = sqrt(px_2 + py_2);
-  if (sqrt_px2_py2 == 0) {
-    // Potential divide by zero. We want to ignore this state update so?
+  //recover state parameters
+  float px = x_state(0);
+  float py = x_state(1);
+  float vx = x_state(2);
+  float vy = x_state(3);
+
+  //pre-compute a set of terms to avoid repeated calculation
+  float c1 = px*px+py*py;
+  float c2 = sqrt(c1);
+  float c3 = (c1*c2);
+
+  //check division by zero
+  if(fabs(c1) < 0.0001){
+    cout << "CalculateJacobian () - Error - Division by Zero" << endl;
     return false;
   }
 
-  double vx = x_state(2);
-  double vy = x_state(3);
-
-  double px_over_sqrt = px / sqrt(px_2 + py_2);
-  double py_over_sqrt = py / sqrt(px_2 + py_2);
-  double denom_1 = pow((px_2 + py_2), 1.5);
-  double num_1 = py * ((vx * py) - (vy * px));
-
-  *Hj << px_over_sqrt, py_over_sqrt, 0, 0, -1 * py / (px_2 + py_2),
-      px / px_2 + py_2, 0, 0, num_1 / denom_1,
-      (py * (vx * py - vy * px)) / denom_1, px_over_sqrt, py_over_sqrt;
+  //compute the Jacobian matrix
+  *Hj << (px/c2), (py/c2), 0, 0,
+      -(py/c1), (px/c1), 0, 0,
+      py*(vx*py - vy*px)/c3, px*(px*vy - py*vx)/c3, px/c2, py/c2;
 
   return true;
 }
@@ -72,8 +70,33 @@ double Tools::NormalizeAngle(double radians_in) {
   double normalized_angle = radians_in;
   double two_pi = 2 * M_PI;
   while (normalized_angle < -M_PI || normalized_angle > M_PI) {
-    if (normalized_angle > M_PI) normalized_angle -= two_pi;
-    if (normalized_angle < -M_PI) normalized_angle -= two_pi;
+    if (normalized_angle > M_PI) {
+      normalized_angle -= two_pi;
+    }
+    if (normalized_angle < -M_PI) {
+      normalized_angle += two_pi;
+    }
   }
   return normalized_angle;
+}
+
+VectorXd Tools::PositionSpaceToRadarMeasurementSpace(const VectorXd &x) {
+  VectorXd rm_space(3);
+  //recover state parameters
+  float px = x(0);
+  float py = x(1);
+  float vx = x(2);
+  float vy = x(3);
+
+  float c1 = px*px+py*py;
+  float c2 = sqrt(c1);
+  float c3 = (c1*c2);
+
+
+  double ro = c2;
+  double theta = atan2(py, px);
+  double ro_dot = (px*vx + py*vy) / c2;
+  rm_space << ro, theta, ro_dot;
+  return rm_space;
+
 }

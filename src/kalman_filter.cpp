@@ -60,7 +60,10 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
     std::cout << "Unable to calculate the jacobian matrix for current state.";
     return;
   }
-  VectorXd y = z - Hj * x_;
+  VectorXd x_rm_space = Tools::PositionSpaceToRadarMeasurementSpace(x_);
+
+  VectorXd y = z - x_rm_space;
+  y(1) = Tools::NormalizeAngle(y(1));
   MatrixXd S = Hj * P_ * Hj.transpose() + Rr_;
   MatrixXd K = P_ * Hj.transpose() * S.inverse();
   VectorXd x_prime = x_ + (K * y);

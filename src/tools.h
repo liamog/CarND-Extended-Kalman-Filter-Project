@@ -23,9 +23,16 @@ class Tools {
   /**
    * Returns the specified angle in the range -PI < 0 < PI
    * @param radians_in
-   * @return
+   * @return normalized angle in radians
    */
   static double NormalizeAngle(double radians_in);
+
+  /**
+   * Convert the vector x(px, py, vx, vy) to radar measurement space m(ro, theta, ro_dot)
+   * @param position state
+   * @return radar measurement state
+   */
+  static VectorXd PositionSpaceToRadarMeasurementSpace(const VectorXd &x);
 };
 
 #endif /* TOOLS_H_ */

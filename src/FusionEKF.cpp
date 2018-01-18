@@ -12,7 +12,7 @@ using std::vector;
  * Constructor.
  */
 FusionEKF::FusionEKF() {
-  lidar_enabled_ = false;
+  lidar_enabled_ = true;
   radar_enabled_ = true;
 
   is_initialized_ = false;
@@ -146,8 +146,13 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR &&
       radar_enabled_) {
     // Radar updates
+    double ro = measurement_pack.raw_measurements_[0];
+    double theta =
+        Tools::NormalizeAngle(measurement_pack.raw_measurements_[1]);
+    double ro_dot = measurement_pack.raw_measurements_[2];
+
     Eigen::VectorXd z(3);
-    z << measurement_pack.raw_measurements_;
+    z << ro, theta, ro_dot;
     ekf_.UpdateEKF(z);
   } else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER &&
              lidar_enabled_) {
@@ -156,4 +161,5 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
     z << measurement_pack.raw_measurements_;
     ekf_.Update(z);
   }
+  previous_timestamp_ = measurement_pack.timestamp_;
 }
