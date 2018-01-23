@@ -1,5 +1,5 @@
-#include <iostream>
 #include "kalman_filter.h"
+#include <iostream>
 #include "tools.h"
 
 using Eigen::MatrixXd;
@@ -7,7 +7,6 @@ using Eigen::VectorXd;
 
 // Please note that the Eigen library does not initialize
 // VectorXd or MatrixXd objects with zeros upon creation.
-
 KalmanFilter::KalmanFilter() : x_(4), P_(4, 4) {
   P_ << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 }
@@ -46,15 +45,8 @@ void KalmanFilter::Update(const VectorXd &z) {
 }
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
-  /**
-  TODO:
-    * update the state by using Extended Kalman Filter equations
-  */
-
-  MatrixXd Hj(3,4);
-  Hj << 0,0,0,0,
-        0,0,0,0,
-        0,0,0,0;
+  MatrixXd Hj(3, 4);
+  Hj << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0;
 
   if (!Tools::CalculateJacobian(x_, &Hj)) {
     std::cout << "Unable to calculate the jacobian matrix for current state.";
@@ -63,6 +55,7 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   VectorXd x_rm_space = Tools::PositionSpaceToRadarMeasurementSpace(x_);
 
   VectorXd y = z - x_rm_space;
+  // Ensure that our angle is properly normalized.
   y(1) = Tools::NormalizeAngle(y(1));
   MatrixXd S = Hj * P_ * Hj.transpose() + Rr_;
   MatrixXd K = P_ * Hj.transpose() * S.inverse();

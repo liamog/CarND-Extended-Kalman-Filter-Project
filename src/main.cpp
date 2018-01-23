@@ -109,7 +109,7 @@ int main() {
           // state vector
 
           VectorXd estimate(4);
-          const Eigen::VectorXd &x =fusionEKF.ekf_.x();
+          const Eigen::VectorXd &x = fusionEKF.ekf_.x();
           double p_x = x(0);
           double p_y = x(1);
           double v1 = x(2);
@@ -133,7 +133,7 @@ int main() {
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
-//          std::cout << msg << std::endl;
+          //          std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {

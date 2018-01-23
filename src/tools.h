@@ -28,7 +28,8 @@ class Tools {
   static double NormalizeAngle(double radians_in);
 
   /**
-   * Convert the vector x(px, py, vx, vy) to radar measurement space m(ro, theta, ro_dot)
+   * Convert the vector x(px, py, vx, vy) to radar measurement space m(ro,
+   * theta, ro_dot)
    * @param position state
    * @return radar measurement state
    */

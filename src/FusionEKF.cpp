@@ -29,13 +29,10 @@ FusionEKF::FusionEKF() {
   Hj_ = MatrixXd(3, 4);
 
   // measurement covariance matrix - laser
-  R_laser_ << 0.0225, 0,
-              0, 0.0225;
+  R_laser_ << 0.0225, 0, 0, 0.0225;
 
   // measurement covariance matrix - radar
-  R_radar_ << 0.09, 0, 0,
-              0, 0.0009, 0,
-              0, 0, 0.09;
+  R_radar_ << 0.09, 0, 0, 0, 0.0009, 0, 0, 0, 0.09;
 }
 
 /**
@@ -48,15 +45,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  Initialization
    ****************************************************************************/
   if (!is_initialized_) {
-    /**
-    TODO:
-      * Initialize the state ekf_.x_ with the first measurement.
-      * Create the covariance matrix.
-      * Remember: you'll need to convert radar from polar to cartesian
-    coordinates.
-    */
-    // cout << "Kalman Filter Initialization " << endl;
-
     // set the state with the initial location and zero velocity
     Eigen::VectorXd x_in(4);
 
@@ -118,13 +106,6 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  Prediction
    ****************************************************************************/
 
-  /**
-   TODO:
-     * Update the state transition matrix F according to the new elapsed time.
-      - Time is measured in seconds.
-     * Update the process noise covariance matrix.
-     * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
-   */
   constexpr double kNoiseAx = 9.0;
   constexpr double kNoiseAy = 9.0;
   double dt = (measurement_pack.timestamp_ - previous_timestamp_) / 1000000.0;
@@ -137,18 +118,11 @@ void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
    *  Update
    ****************************************************************************/
 
-  /**
-   TODO:
-     * Use the sensor type to perform the update step.
-     * Update the state and covariance matrices.
-   */
-
   if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR &&
       radar_enabled_) {
     // Radar updates
     double ro = measurement_pack.raw_measurements_[0];
-    double theta =
-        Tools::NormalizeAngle(measurement_pack.raw_measurements_[1]);
+    double theta = Tools::NormalizeAngle(measurement_pack.raw_measurements_[1]);
     double ro_dot = measurement_pack.raw_measurements_[2];
 
     Eigen::VectorXd z(3);
